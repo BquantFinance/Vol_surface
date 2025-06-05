@@ -16,36 +16,26 @@ import time
 
 warnings.filterwarnings('ignore')
 
-# Paleta de Colores Oceánica Cohesiva - Integrada con el diseño de la app
+# Paleta de Colores Oceánica - Actualizada para coincidir con el gráfico
 WAVE_COLORS = [
-    '#000033',  # Azul marino profundo (base app)
-    '#001f5c',  # Azul océano profundo 
+    '#000033',  # Azul marino profundo
+    '#001f5c',  # Azul océano profundo
     '#0041a3',  # Azul brillante
-    '#0074D9',  # Azul medio (color principal app)
-    '#39CCCC',  # Cian/Teal (color accent app)
-    '#00e6e6',  # Cian brillante
-    '#00ffcc',  # Cian-verde
-    '#00ff99',  # Verde-cian
-    '#66ff66',  # Verde claro
-    '#99ff33',  # Verde-amarillo
+    '#0066cc',  # Azul medio
+    '#39CCCC',  # Cian/Teal
+    '#00ff66',  # Verde brillante
+    '#66ff00',  # Verde-amarillo
     '#ccff00',  # Amarillo-verde
     '#ffff00',  # Amarillo puro
     '#ffcc00',  # Amarillo-naranja
     '#ff9900',  # Naranja
     '#ff6600',  # Naranja-rojo
-    '#ff3300'   # Rojo (peak)
+    '#ff3300',  # Rojo
+    '#ff0066',  # Rojo-magenta
+    '#cc0099',  # Magenta
+    '#9900cc',  # Púrpura
+    '#6600ff'   # Púrpura brillante
 ]
-
-# Paleta complementaria para elementos UI
-UI_COLORS = {
-    'primary': '#39CCCC',
-    'secondary': '#0074D9', 
-    'accent': '#00e6e6',
-    'background': '#000033',
-    'surface': '#001f5c',
-    'text': '#ffffff',
-    'text_secondary': '#b0e0e6'
-}
 
 # Configuración de página Streamlit
 st.set_page_config(
@@ -55,99 +45,57 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS personalizado con tema oceánico cohesivo
-st.markdown(f"""
+# CSS personalizado con tema oceánico
+st.markdown("""
 <style>
-    .main-header {{
-        background: linear-gradient(90deg, {UI_COLORS['background']}, {UI_COLORS['surface']}, {UI_COLORS['secondary']}, {UI_COLORS['primary']});
+    .main-header {
+        background: linear-gradient(90deg, #000033, #001f5c, #0041a3, #39CCCC);
         padding: 1.5rem;
         border-radius: 15px;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 20px rgba(57, 204, 204, 0.3);
-        border: 1px solid {UI_COLORS['accent']};
-    }}
+        box-shadow: 0 4px 15px rgba(0, 31, 92, 0.3);
+    }
     
-    .metric-card {{
-        background: linear-gradient(135deg, {UI_COLORS['background']}, {UI_COLORS['surface']});
+    .metric-card {
+        background: linear-gradient(135deg, #000033, #001f5c);
         padding: 1.2rem;
-        border-radius: 12px;
-        border-left: 5px solid {UI_COLORS['primary']};
-        box-shadow: 0 3px 15px rgba(0, 116, 217, 0.2);
-        border: 1px solid rgba(57, 204, 204, 0.2);
-    }}
+        border-radius: 10px;
+        border-left: 5px solid #39CCCC;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
     
-    .stMetric {{
-        background: linear-gradient(135deg, rgba(0, 31, 92, 0.15), rgba(57, 204, 204, 0.1));
+    .stMetric {
+        background: rgba(0, 31, 92, 0.15);
+        padding: 0.8rem;
+        border-radius: 8px;
+        border: 1px solid rgba(57, 204, 204, 0.3);
+    }
+    
+    .bquant-footer {
+        background: linear-gradient(90deg, #000033, #001f5c);
         padding: 1rem;
         border-radius: 10px;
-        border: 1px solid {UI_COLORS['accent']};
-        box-shadow: 0 2px 8px rgba(0, 230, 230, 0.1);
-    }}
-    
-    .bquant-footer {{
-        background: linear-gradient(90deg, {UI_COLORS['background']}, {UI_COLORS['surface']});
-        padding: 1.5rem;
-        border-radius: 12px;
         text-align: center;
         margin-top: 2rem;
-        border: 2px solid {UI_COLORS['primary']};
-        box-shadow: 0 4px 20px rgba(57, 204, 204, 0.2);
-    }}
+        border: 2px solid #39CCCC;
+    }
     
-    .sidebar .sidebar-content {{
-        background: linear-gradient(180deg, {UI_COLORS['background']}, {UI_COLORS['surface']});
-    }}
+    .sidebar .sidebar-content {
+        background: linear-gradient(180deg, #000033, #001f5c);
+    }
     
-    .stButton > button {{
-        background: linear-gradient(45deg, {UI_COLORS['primary']}, {UI_COLORS['secondary']});
+    .stButton > button {
+        background: linear-gradient(45deg, #39CCCC, #0066cc);
         color: white;
         border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         font-weight: bold;
-        box-shadow: 0 3px 10px rgba(57, 204, 204, 0.3);
-        transition: all 0.3s ease;
-    }}
+    }
     
-    .stButton > button:hover {{
-        background: linear-gradient(45deg, {UI_COLORS['accent']}, {UI_COLORS['primary']});
-        box-shadow: 0 5px 15px rgba(57, 204, 204, 0.5);
-        transform: translateY(-2px);
-    }}
-    
-    .stSelectbox > div > div {{
-        background: linear-gradient(135deg, rgba(0, 31, 92, 0.3), rgba(57, 204, 204, 0.1));
-        border: 1px solid {UI_COLORS['primary']};
-        border-radius: 8px;
-    }}
-    
-    .stTextInput > div > div > input {{
-        background: linear-gradient(135deg, rgba(0, 31, 92, 0.2), rgba(57, 204, 204, 0.05));
-        border: 1px solid {UI_COLORS['accent']};
-        border-radius: 8px;
-        color: {UI_COLORS['text']};
-    }}
-    
-    .stSlider > div > div > div {{
-        background: {UI_COLORS['primary']};
-    }}
-    
-    /* Información contextual mejorada */
-    .info-box {{
-        background: linear-gradient(135deg, rgba(0, 230, 230, 0.1), rgba(0, 116, 217, 0.1));
-        border-left: 4px solid {UI_COLORS['accent']};
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-    }}
-    
-    /* Títulos de secciones */
-    .section-title {{
-        color: {UI_COLORS['primary']};
-        font-weight: bold;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid {UI_COLORS['accent']};
-    }}
+    .stSelectbox > div > div {
+        background-color: rgba(0, 31, 92, 0.2);
+        border: 1px solid #39CCCC;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -417,12 +365,9 @@ def create_plotly_surface(df, ticker, stock_price):
             colorbar=dict(
                 title=dict(
                     text="Volatilidad Implícita",
-                    font=dict(color=UI_COLORS['text'])
+                    font=dict(color='white')
                 ),
-                tickfont=dict(color=UI_COLORS['text_secondary']),
-                bgcolor=UI_COLORS['surface'],
-                bordercolor=UI_COLORS['primary'],
-                borderwidth=1
+                tickfont=dict(color='white')
             )
         )
         
@@ -448,48 +393,48 @@ def create_plotly_surface(df, ticker, stock_price):
         fig.update_layout(
             title=dict(
                 text=f'{ticker} Superficie de Volatilidad | Precio: ${stock_price:.2f} | Puntos: {len(df):,}',
-                font=dict(color=UI_COLORS['text'], size=18),
+                font=dict(color='white', size=18),
                 x=0.5
             ),
             scene=dict(
                 xaxis_title='Tiempo al Vencimiento (Años)',
                 yaxis_title='Moneyness (Strike/Spot)',
                 zaxis_title='Volatilidad Implícita',
-                bgcolor=UI_COLORS['background'],
+                bgcolor='rgba(0,0,0,0.95)',
                 xaxis=dict(
-                    backgroundcolor=f"rgba({int(UI_COLORS['surface'][1:3], 16)},{int(UI_COLORS['surface'][3:5], 16)},{int(UI_COLORS['surface'][5:7], 16)},0.8)", 
-                    gridcolor=UI_COLORS['accent'],
+                    backgroundcolor='rgba(0,15,40,0.8)', 
+                    gridcolor='rgba(57,204,204,0.3)',
                     title=dict(
                         text='Tiempo al Vencimiento (Años)',
-                        font=dict(color=UI_COLORS['text'])
+                        font=dict(color='white')
                     ),
-                    tickfont=dict(color=UI_COLORS['text_secondary'])
+                    tickfont=dict(color='white')
                 ),
                 yaxis=dict(
-                    backgroundcolor=f"rgba({int(UI_COLORS['surface'][1:3], 16)},{int(UI_COLORS['surface'][3:5], 16)},{int(UI_COLORS['surface'][5:7], 16)},0.8)", 
-                    gridcolor=UI_COLORS['accent'],
+                    backgroundcolor='rgba(0,15,40,0.8)', 
+                    gridcolor='rgba(57,204,204,0.3)',
                     title=dict(
                         text='Moneyness (Strike/Spot)',
-                        font=dict(color=UI_COLORS['text'])
+                        font=dict(color='white')
                     ),
-                    tickfont=dict(color=UI_COLORS['text_secondary'])
+                    tickfont=dict(color='white')
                 ),
                 zaxis=dict(
-                    backgroundcolor=f"rgba({int(UI_COLORS['surface'][1:3], 16)},{int(UI_COLORS['surface'][3:5], 16)},{int(UI_COLORS['surface'][5:7], 16)},0.8)", 
-                    gridcolor=UI_COLORS['accent'],
+                    backgroundcolor='rgba(0,15,40,0.8)', 
+                    gridcolor='rgba(57,204,204,0.3)',
                     title=dict(
                         text='Volatilidad Implícita',
-                        font=dict(color=UI_COLORS['text'])
+                        font=dict(color='white')
                     ),
-                    tickfont=dict(color=UI_COLORS['text_secondary'])
+                    tickfont=dict(color='white')
                 ),
                 camera=dict(
                     eye=dict(x=1.5, y=1.5, z=1.2)
                 )
             ),
-            font=dict(color=UI_COLORS['text']),
-            paper_bgcolor=UI_COLORS['background'],
-            plot_bgcolor=UI_COLORS['background'],
+            font=dict(color='white'),
+            paper_bgcolor='rgba(0,0,0,0.95)',
+            plot_bgcolor='rgba(0,0,0,0.95)',
             height=700
         )
         
@@ -500,17 +445,17 @@ def create_plotly_surface(df, ticker, stock_price):
         return None
 
 def main():
-    # Encabezado mejorado con cohesión visual
-    st.markdown(f"""
+    # Encabezado
+    st.markdown("""
     <div class="main-header">
-        <h1 style="color: {UI_COLORS['text']}; margin: 0; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">🌊 Generador de Superficies de Volatilidad</h1>
-        <p style="color: {UI_COLORS['primary']}; margin: 0; text-align: center; font-size: 18px; font-weight: 500;">Análisis Interactivo 3D de Volatilidad de Opciones</p>
-        <p style="color: {UI_COLORS['accent']}; margin: 0; text-align: center; font-size: 14px; margin-top: 10px; font-weight: 600;">Desarrollado por <strong>BQuant</strong></p>
+        <h1 style="color: white; margin: 0; text-align: center;">🌊 Generador de Superficies de Volatilidad</h1>
+        <p style="color: #39CCCC; margin: 0; text-align: center; font-size: 18px;">Análisis Interactivo 3D de Volatilidad de Opciones</p>
+        <p style="color: #66ff00; margin: 0; text-align: center; font-size: 14px; margin-top: 10px;">Desarrollado por <strong>BQuant</strong></p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Controles de la barra lateral con estilo cohesivo
-    st.sidebar.markdown(f'<div class="section-title">🎛️ Controles de Superficie</div>', unsafe_allow_html=True)
+    # Controles de la barra lateral
+    st.sidebar.markdown("## 🎛️ Controles de Superficie")
     
     # Selección de ticker
     default_tickers = ["SPY", "QQQ", "IWM", "AAPL", "MSFT", "GOOGL", "TSLA", "NVDA", "META", "AMZN"]
@@ -531,8 +476,8 @@ def main():
     
     ticker = custom_ticker.upper() if custom_ticker else ticker_input
     
-    # Parámetros con estilo mejorado
-    st.sidebar.markdown(f'<div class="section-title">🔧 Parámetros</div>', unsafe_allow_html=True)
+    # Parámetros
+    st.sidebar.markdown("### 🔧 Parámetros")
     
     risk_free_rate = st.sidebar.slider(
         "Tasa Libre de Riesgo (%)",
@@ -574,14 +519,14 @@ def main():
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown(f'<div class="section-title">📊 Superficie de Volatilidad</div>', unsafe_allow_html=True)
+        st.markdown("### 📊 Superficie de Volatilidad")
         surface_container = st.container()
     
     with col2:
-        st.markdown(f'<div class="section-title">📈 Datos de Mercado</div>', unsafe_allow_html=True)
+        st.markdown("### 📈 Datos de Mercado")
         metrics_container = st.container()
         
-        st.markdown(f'<div class="section-title">📋 Resumen de Datos</div>', unsafe_allow_html=True)
+        st.markdown("### 📋 Resumen de Datos")
         summary_container = st.container()
     
     # Generar superficie cuando se presiona el botón
@@ -729,12 +674,12 @@ def main():
         - Interfaz intuitiva para traders e investigadores
         """)
     
-    # Footer con atribución BQuant - diseño cohesivo
-    st.markdown(f"""
+    # Footer con atribución BQuant
+    st.markdown("""
     <div class="bquant-footer">
-        <h3 style="color: {UI_COLORS['primary']}; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">🌊 BQuant - Análisis Cuantitativo Profesional</h3>
-        <p style="color: {UI_COLORS['text']}; margin: 5px 0; font-weight: 400;">Herramientas avanzadas para trading e investigación financiera</p>
-        <p style="color: {UI_COLORS['accent']}; margin: 0; font-size: 14px; font-weight: 500;">Superficies de Volatilidad | Black-Scholes | Análisis de Opciones</p>
+        <h3 style="color: #39CCCC; margin: 0;">🌊 BQuant - Análisis Cuantitativo Profesional</h3>
+        <p style="color: white; margin: 5px 0;">Herramientas avanzadas para trading e investigación financiera</p>
+        <p style="color: #66ff00; margin: 0; font-size: 14px;">Superficies de Volatilidad | Black-Scholes | Análisis de Opciones</p>
     </div>
     """, unsafe_allow_html=True)
 
