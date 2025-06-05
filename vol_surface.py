@@ -363,8 +363,10 @@ def create_plotly_surface(df, ticker, stock_price):
             name="Superficie de Volatilidad",
             showscale=True,
             colorbar=dict(
-                title="Volatilidad Implícita",
-                titlefont=dict(color='white'),
+                title=dict(
+                    text="Volatilidad Implícita",
+                    font=dict(color='white')
+                ),
                 tickfont=dict(color='white')
             )
         )
