@@ -404,19 +404,28 @@ def create_plotly_surface(df, ticker, stock_price):
                 xaxis=dict(
                     backgroundcolor='rgba(0,15,40,0.8)', 
                     gridcolor='rgba(57,204,204,0.3)',
-                    titlefont=dict(color='white'),
+                    title=dict(
+                        text='Tiempo al Vencimiento (Años)',
+                        font=dict(color='white')
+                    ),
                     tickfont=dict(color='white')
                 ),
                 yaxis=dict(
                     backgroundcolor='rgba(0,15,40,0.8)', 
                     gridcolor='rgba(57,204,204,0.3)',
-                    titlefont=dict(color='white'),
+                    title=dict(
+                        text='Moneyness (Strike/Spot)',
+                        font=dict(color='white')
+                    ),
                     tickfont=dict(color='white')
                 ),
                 zaxis=dict(
                     backgroundcolor='rgba(0,15,40,0.8)', 
                     gridcolor='rgba(57,204,204,0.3)',
-                    titlefont=dict(color='white'),
+                    title=dict(
+                        text='Volatilidad Implícita',
+                        font=dict(color='white')
+                    ),
                     tickfont=dict(color='white')
                 ),
                 camera=dict(
