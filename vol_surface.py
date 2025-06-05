@@ -184,15 +184,29 @@ def collect_volatility_data(ticker, risk_free_rate=0.05, quality_level="equilibr
     
     try:
         status_text.text("📊 Obteniendo datos de la acción...")
-        progress_bar.progress(10)
+        progress_bar.progress(0.1)
         
         stock = yf.Ticker(ticker)
-        stock_price = stock.history(period="1d")['Close'].iloc[-1]
+        hist_data = stock.history(period="5d")
+        
+        if hist_data.empty:
+            st.error(f"❌ No se pudo obtener datos históricos para {ticker}")
+            return None, None
+            
+        stock_price = hist_data['Close'].iloc[-1]
         
         status_text.text("📅 Obteniendo fechas de vencimiento...")
-        progress_bar.progress(20)
+        progress_bar.progress(0.2)
         
-        all_expirations = list(stock.options)
+        try:
+            all_expirations = list(stock.options)
+        except Exception as e:
+            st.error(f"❌ No se encontraron opciones para {ticker}. Puede que no tenga opciones listadas o el mercado esté cerrado.")
+            return None, None
+            
+        if not all_expirations:
+            st.error(f"❌ No hay fechas de vencimiento disponibles para {ticker}")
+            return None, None
         current_date = pd.Timestamp.now()
         
         # Filtrar vencimientos basado en nivel de calidad
@@ -215,12 +229,18 @@ def collect_volatility_data(ticker, risk_free_rate=0.05, quality_level="equilibr
         
         selected_expirations = filtered_expirations[:max_expirations]
         
+        if not selected_expirations:
+            st.warning(f"⚠️ No se encontraron vencimientos válidos para {ticker} en el rango de {min_days}-{max_days} días")
+            return None, None
+            
+        st.info(f"✅ Encontrados {len(selected_expirations)} vencimientos válidos para analizar")
+        
         volatility_data = []
         total_expirations = len(selected_expirations)
         
         for i, exp_date in enumerate(selected_expirations):
             status_text.text(f"🔄 Procesando {exp_date} ({i+1}/{total_expirations})")
-            progress_bar.progress(20 + (70 * i / total_expirations))
+            progress_bar.progress(0.2 + (0.7 * i / total_expirations))
             
             try:
                 opt_chain = stock.option_chain(exp_date)
@@ -281,13 +301,25 @@ def collect_volatility_data(ticker, risk_free_rate=0.05, quality_level="equilibr
                 st.warning(f"⚠️ Error procesando {exp_date}: {str(e)}")
                 continue
         
-        progress_bar.progress(100)
+        progress_bar.progress(1.0)
         status_text.text("✅ Recolección de datos completada!")
         time.sleep(1)
         progress_bar.empty()
         status_text.empty()
         
         df = pd.DataFrame(volatility_data)
+        
+        if len(df) == 0:
+            st.warning(f"⚠️ No se recolectaron datos válidos para {ticker}")
+            st.info("""
+            **Posibles soluciones:**
+            - Intenta durante horas de mercado (9:30 AM - 4:00 PM ET)
+            - Usa un ticker más líquido (SPY, QQQ, AAPL)
+            - Cambia a nivel de calidad "relajado"
+            - Verifica que el ticker tenga opciones listadas
+            """)
+            return None, None
+            
         return df, stock_price
         
     except Exception as e:
@@ -465,6 +497,13 @@ def main():
         use_container_width=True
     )
     
+    # Información de estado del mercado (simplificado)
+    current_hour = datetime.now().hour
+    if 9 <= current_hour <= 16:
+        st.sidebar.info("💡 Tip: Mejores datos durante horas de mercado (9:30-16:00 ET)")
+    else:
+        st.sidebar.warning("⏰ Fuera de horario de mercado - datos pueden estar limitados")
+    
     # Área de contenido principal
     col1, col2 = st.columns([2, 1])
     
@@ -544,7 +583,23 @@ def main():
                     st.error("❌ Falló la creación de superficie de volatilidad")
             
             else:
-                st.error(f"❌ No hay datos disponibles para {ticker}. Prueba un ticker diferente o relaja las configuraciones de calidad.")
+                st.error(f"❌ No hay datos disponibles para {ticker}.")
+                st.info("""
+                **💡 Consejos para resolver el problema:**
+                
+                🕐 **Horario**: Intenta durante horas de mercado (9:30 AM - 4:00 PM ET)
+                
+                📈 **Tickers recomendados**: SPY, QQQ, AAPL, MSFT, TSLA
+                
+                ⚙️ **Configuración**: Cambia a nivel de calidad "relajado"
+                
+                🔍 **Verificar**: Asegúrate que el ticker tenga opciones listadas
+                """)
+                
+                # Sugerir tickers alternativos
+                suggested_tickers = ["SPY", "QQQ", "AAPL", "MSFT", "TSLA"]
+                if ticker not in suggested_tickers:
+                    st.info(f"🔄 **Sugerencia**: Prueba con tickers más líquidos: {', '.join(suggested_tickers)}")
     
     # Sección de información
     st.markdown("---")
